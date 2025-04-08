@@ -26,6 +26,6 @@ else:
     st.write("Press the 'Tokenize' button to see the result.")
 
 # Set up ngrok
-ngrok.set_auth_token("2vELlOuyvl6OzhW3UT1FfJIFVTH_6jCw9eKx7LYJTDU8ReHzS")  # Replace with your actual token
+ngrok.set_auth_token("Add Token")  # Replace with your actual token
 public_url = ngrok.connect(port=8501)
 print(f"Streamlit app is live at: {public_url}")
