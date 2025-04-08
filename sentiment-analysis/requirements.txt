@@ -1,0 +1,11 @@
+# Install pandas
+pip install pandas
+
+# Install numpy
+pip install numpy
+
+# Install scikit-learn
+pip install scikit-learn
+
+# Install gensim
+pip install gensim
