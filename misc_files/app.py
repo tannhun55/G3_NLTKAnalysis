@@ -1,31 +1,38 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import streamlit as st
-import nltk
-from nltk.tokenize import word_tokenize
-from pyngrok import ngrok
+import pandas as pd
+from src.sentiment_analysis import vader_sentiment_analysis
+from src.preprocessing import load_and_clean_data
 
-# Download necessary NLTK data (if needed)
-nltk.download('punkt')
+st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="wide")
 
-# Streamlit Interface
-st.title("Simple NLTK Tokenizer")
+st.title("📊 Sentiment Analysis Dashboard (VADER + Preprocessing)")
 
-# Instructions
-st.write("This is a simple example using NLTK's word tokenizer.")
+uploaded_file = st.file_uploader("📤 Upload a CSV file with a 'review' column", type="csv")
 
-# Input Textbox
-text_input = st.text_area("Enter some text to tokenize:")
+if uploaded_file:
+    st.subheader("📄 Raw Data (Preprocessed)")
+    df = load_and_clean_data(uploaded_file)
+    st.dataframe(df.head())
 
-# Button to process the text
-if st.button("Tokenize"):
-    if text_input:
-        tokens = word_tokenize(text_input)
-        st.write("Tokens:", tokens)
-    else:
-        st.write("Please enter some text to tokenize.")
+    st.subheader("🎯 Sentiment Results (VADER Scores)")
+    df = vader_sentiment_analysis(df, text_column='review')
+    st.dataframe(df[['review', 'compound', 'positive', 'negative', 'neutral']].head())
+
+    st.subheader("📊 Sentiment Distribution")
+    sentiment_counts = (
+        df['compound']
+        .apply(lambda x: 'positive' if x > 0 else 'negative' if x < 0 else 'neutral')
+        .value_counts()
+    )
+    st.bar_chart(sentiment_counts)
+
+    st.subheader("⬇️ Download Results")
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button("Download CSV", csv, "sentiment_results.csv", "text/csv")
+
 else:
-    st.write("Press the 'Tokenize' button to see the result.")
-
-# Set up ngrok
-ngrok.set_auth_token("Add Token")  # Replace with your actual token
-public_url = ngrok.connect(port=8501)
-print(f"Streamlit app is live at: {public_url}")
+    st.info("Upload a CSV file to begin.")

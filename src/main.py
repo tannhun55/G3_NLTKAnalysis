@@ -19,7 +19,7 @@ from preprocessing import preprocess_text
 def main(): 
     # Loading data - I had issues using a relative path, so I used an absolute path.
     # You need to update the absolute path with your own path to the CSV file.
-    data_path = r'C:\Users\Tann\Documents\SmartUI_project_test\sentiment-analysis\src\data\sample_reviews.csv'
+    data_path = r'C:\Users\Tanjil\OneDrive\Desktop\Study\Winter 2025\UI_UX Design_BinduGoel\G3_NLTKAnalysis\sentiment-analysis\src\data\sample_reviews.csv'
     df = pd.read_csv(data_path)
 
     # Clean column names in case there are hidden characters or spaces
