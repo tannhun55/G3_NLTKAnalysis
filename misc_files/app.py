@@ -11,28 +11,31 @@ st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="wide")
 
 st.title("📊 Sentiment Analysis Dashboard (VADER + Preprocessing)")
 
-uploaded_file = st.file_uploader("📤 Upload a CSV file with a 'review' column", type="csv")
+uploaded_file = st.file_uploader("📤 Upload a CSV file", type="csv")
 
 if uploaded_file:
-    st.subheader("📄 Raw Data (Preprocessed)")
+    st.subheader("📄 Raw Data")
     df = load_and_clean_data(uploaded_file)
     st.dataframe(df.head())
 
-    st.subheader("🎯 Sentiment Results (VADER Scores)")
-    df = vader_sentiment_analysis(df, text_column='review')
-    st.dataframe(df[['review', 'compound', 'positive', 'negative', 'neutral']].head())
+    # User selects which column to analyze
+    text_column = st.selectbox("📌 Select the column to analyze", df.columns)
 
-    st.subheader("📊 Sentiment Distribution")
-    sentiment_counts = (
-        df['compound']
-        .apply(lambda x: 'positive' if x > 0 else 'negative' if x < 0 else 'neutral')
-        .value_counts()
-    )
-    st.bar_chart(sentiment_counts)
+    if text_column:
+        st.subheader("🎯 Sentiment Results (VADER Scores)")
+        df = vader_sentiment_analysis(df, text_column=text_column)
+        st.dataframe(df[[text_column, 'compound', 'positive', 'negative', 'neutral']].head())
 
-    st.subheader("⬇️ Download Results")
-    csv = df.to_csv(index=False).encode('utf-8')
-    st.download_button("Download CSV", csv, "sentiment_results.csv", "text/csv")
+        st.subheader("📊 Sentiment Distribution")
+        sentiment_counts = (
+            df['compound']
+            .apply(lambda x: 'positive' if x > 0 else 'negative' if x < 0 else 'neutral')
+            .value_counts()
+        )
+        st.bar_chart(sentiment_counts)
 
+        st.subheader("⬇️ Download Results")
+        csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download CSV", csv, "sentiment_results.csv", "text/csv")
 else:
     st.info("Upload a CSV file to begin.")

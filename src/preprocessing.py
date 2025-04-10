@@ -19,9 +19,9 @@ def preprocess_text(text):
 
 def load_and_clean_data(file):
     """
-    Load a CSV and preprocess the 'review' column.
+    Load a CSV file, drop rows with any missing values.
+    Preprocessing is now done after the user selects a column.
     """
     df = pd.read_csv(file)
-    df.dropna(subset=['review'], inplace=True)
-    df['review'] = df['review'].apply(preprocess_text)
+    df.dropna(inplace=True)
     return df
